@@ -2,7 +2,14 @@
 
 ## Overview
 
-This Python file serves as the backend for a web application, integrating various Azure services including Cognitive Services for speech, Azure Blob Storage, Azure Data Lake Storage, and Azure Search. It uses the Quart framework to handle HTTP requests asynchronously.
+`app.py` is the asynchronous backend for this web application, built with the Quart framework. It integrates multiple Azure services, including:
+
+- **Azure Cognitive Services** (Speech): For speech-to-text and text-to-speech capabilities.
+- **Azure Blob Storage**: For storing and serving static and user-uploaded content.
+- **Azure Data Lake Storage**: For secure, scalable file storage and user uploads.
+- **Azure Search**: For advanced search capabilities over ingested content.
+- **OpenAI**: For natural language processing and chat features.
+- **OpenTelemetry**: For distributed tracing and observability.
 
 ## Dependencies
 
@@ -14,61 +21,44 @@ This Python file serves as the backend for a web application, integrating variou
 - OpenAI
 - OpenTelemetry
 
-## Routes
+## Main Routes
 
-### `/`
-Serves the main entry point of the application, returning the `index.html` static file.
+- `/` — Serves the main entry point (`index.html`).
+- `/redirect` — Blank page for login redirect support.
+- `/favicon.ico` — Serves the favicon.
+- `/assets/<path:path>` — Serves static assets from `static/assets`.
+- `/content/<path>` — Serves files from blob storage with access control.
+- `/ask` (`POST`) — Processes user queries and returns responses.
+- `/chat` (`POST`) — Handles chat messages and returns responses.
+- `/chat/stream` (`POST`) — Streams chat responses as they are generated.
+- `/auth_setup` (`GET`) — Sends MSAL.js authentication settings to the client.
+- `/config` (`GET`) — Provides configuration settings to the client.
+- `/speech` (`POST`) — Handles text-to-speech requests, returns audio data.
+- `/upload` (`POST`) — Handles file uploads to Azure Data Lake Storage.
+- `/delete_uploaded` (`POST`) — Allows users to delete their uploaded files.
+- `/list_uploaded` (`GET`) — Lists files uploaded by the authenticated user.
 
-### `/redirect`
-An empty page recommended for login redirect to work properly.
+## Key Classes & Functions
 
-### `/favicon.ico`
-Serves the favicon icon.
+- **`JSONEncoder`**: Custom JSON encoder for dataclasses.
+- **`setup_clients`**: Initializes Azure service clients and other app dependencies before serving requests.
 
-### `/assets/<path:path>`
-Serves static assets from the `static/assets` directory.
+## Usage
 
-### `/content/<path>`
-Serves content files from blob storage, implementing access control based on user authentication.
+1. **Deployment**: Deploy as a Quart application. Ensure all required environment variables are set (Azure credentials, configuration, etc.).
+2. **Authentication**: Uses MSAL.js for authentication and access control.
+3. **Extensibility**: Add new routes or Azure integrations as needed for your scenario.
 
-### `/ask`, `POST`
-Handles the "ask" functionality, processing user queries and returning responses.
+## Example: Running the Backend
 
-### `/chat`, `POST`
-Handles chat functionality, processing chat messages and returning responses.
+```bash
+export <REQUIRED_ENV_VARS>
+python3 app.py
+```
 
-### `/chat/stream`, `POST`
-Streams chat responses as they are generated.
+Or use the provided `start.sh` script for local development.
 
-### `/auth_setup`, `GET`
-Sends MSAL.js settings to the client UI for authentication setup.
+---
 
-### `/config`, `GET`
-Provides configuration settings to the client.
-
-### `/speech`, `POST`
-Handles text-to-speech requests, returning audio data.
-
-### `/upload`, `POST`
-Handles file uploads to Azure Data Lake Storage.
-
-### `/delete_uploaded`, `POST`
-Allows users to delete their uploaded files.
-
-### `/list_uploaded`, `GET`
-Lists files uploaded by the authenticated user.
-
-## Classes
-
-### `JSONEncoder`
-A custom JSON encoder for handling dataclasses.
-
-## Setup Functions
-
-### `setup_clients`
-Configures clients for Azure services and other setup tasks required before the app starts serving requests.
-
-## Usage Examples
-
-To use this backend, deploy it as a Quart application. Ensure all required environment variables are set, including Azure service credentials and configuration options.
+For more details on configuration, deployment, and customization, see the project-level `README.md` and documentation in the `docs/` directory.
 
